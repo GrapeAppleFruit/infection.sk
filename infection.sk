@@ -1,0 +1,34 @@
+# credit to GrapeAppleFruit#1793
+
+command /start:
+    usage: Start the game.
+    permission: start.inf
+    permission message: Sorry you must have perms to start.
+    trigger:
+        set {_x} to random element out of all players
+        send "[infection] &cThe infected player: %{_x}%"
+        set {_x}'s tablist name to "&a%{_x}%"
+        set {infected::_x} to true
+
+command /end:
+    usage: Start the game.
+    permission: end.inf
+    permission message: Sorry you must have perms to end.
+    trigger:
+        clear {var::*}
+
+on damage of player:
+    if attacker is a player:
+        if {infected::%attacker%} is true:
+            set {infected::%victim%} to true
+            set tablist name of victim to "&a%victim%"
+            send "[infection] &aYou've been infected!" to victim
+        else if {infected::%attacker's uuid%} is false:
+            send "[infection] &cDo not try to damage your teamates." to attacker
+
+every 2 seconds:
+    loop all players:
+        if {infected::%loop-player's uuid%} is true:
+            broadcast "[infected] &cEveryone was infected."
+            clear {var::*}
+            stop 
